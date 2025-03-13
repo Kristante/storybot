@@ -26,3 +26,7 @@ func SelectHandleFromDatabase(pool *pgxpool.Pool, message string) (string, error
 	}
 	return result, nil
 }
+
+func AddHandleFromDatabase(pool *pgxpool.Pool, handleMessage string, answerMessage string) {
+	pool.Exec(context.Background(), "INSERT into handlers (handle, answer) values ($1, $2)", handleMessage, answerMessage)
+}
