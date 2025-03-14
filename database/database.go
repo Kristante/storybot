@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"os"
@@ -27,6 +28,18 @@ func SelectHandleFromDatabase(pool *pgxpool.Pool, message string) (string, error
 	return result, nil
 }
 
-func AddHandleFromDatabase(pool *pgxpool.Pool, handleMessage string, answerMessage string) {
-	pool.Exec(context.Background(), "INSERT into handlers (handle, answer) values ($1, $2)", handleMessage, answerMessage)
+func AddHandleFromDatabase(pool *pgxpool.Pool, handleMessage string, answerMessage string) error {
+	_, err := pool.Exec(context.Background(), "INSERT into handlers (handle, answer) values ($1, $2)", handleMessage, answerMessage)
+	if err != nil {
+		return errors.New("произошла ошибка при добавлении handle")
+	}
+	return nil
+}
+
+func RemoveHandleFromDatabase(pool *pgxpool.Pool, handleMessage string) error {
+	_, err := pool.Exec(context.Background(), "DELETE from handlers WHERE handle = $1", handleMessage)
+	if err != nil {
+		return errors.New("данный handle отсутствует")
+	}
+	return nil
 }
